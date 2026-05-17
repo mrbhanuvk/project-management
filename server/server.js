@@ -11,15 +11,15 @@ import {
 
 import { serve } from 'inngest/express';
 import { inngest, functions } from './src/inngest/index.js';
+import workspaceRouter from './src/routes/workspaceRoutes.js';
+import { protect } from './src/middlewares/authMiddleware.js';
 
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
 
-// Inngest endpoint
 app.use(
   '/api/inngest',
   serve({
@@ -28,34 +28,25 @@ app.use(
   })
 );
 
-// Public route
 app.get('/', (req, res) => {
   res.send('Server is live!');
 });
 
-// Protected route
 app.get('/protected', requireAuth(), async (req, res) => {
   try {
     const { userId } = getAuth(req);
-
     const user = await clerkClient.users.getUser(userId);
-
-    res.json({
-      message: 'Protected route accessed',
-      user,
-    });
+    res.json({ message: 'Protected route accessed', user });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      message: 'Internal server error',
-    });
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+app.use('/api/workspaces', protect, workspaceRouter);
 
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
