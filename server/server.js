@@ -16,7 +16,10 @@ import { protect } from './src/middlewares/authMiddleware.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://project-mgt-olive.vercel.app'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(clerkMiddleware());
 
