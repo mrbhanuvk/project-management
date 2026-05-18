@@ -1,6 +1,19 @@
-node_modules/
+# dependencies
+node_modules
+
+# env files
 .env
-.env.local
-client/node_modules/
-server/node_modules/
-.env
+client/.env
+server/.env
+
+# macOS
+.DS_Store
+
+# build files
+dist
+.vercel
+
+# logs
+logs
+*.log
+npm-debug.log*
