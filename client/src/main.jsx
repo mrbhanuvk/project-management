@@ -6,7 +6,7 @@ import { store } from './app/store.js'
 import { Provider } from 'react-redux'
 import { ClerkProvider } from '@clerk/react'
 
-console.log(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
+//console.log(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
 
 createRoot(document.getElementById('root')).render(
     <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
