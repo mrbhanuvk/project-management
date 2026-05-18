@@ -196,4 +196,4 @@ export const functions = [
   sendTaskAssignmentEmail,
 ];
 
-export { inngest };
+
