@@ -6,6 +6,9 @@ export const createTask = async (req, res) => {
     const { userId } = await req.auth();
     const { projectId, title, description, type, status, priority, assigneeId, due_date } = req.body;
 
+    console.log("projectId received:", projectId);  // add this
+    console.log("userId:", userId);                  // add this
+
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: { members: { include: { user: true } } }
@@ -38,11 +41,12 @@ export const createTask = async (req, res) => {
     });
 
     await inngest.send({
-        name: "app/task.assigned",
-        data:{
-            taskId: task.id, origin
-        }
-    })
+      name: "app/task.assigned",
+      data: {
+          taskId: task.id,
+          origin: req.headers.origin 
+      }
+  })
 
     res.json({ task: taskWithAssignee, message: "Task created successfully" });
 

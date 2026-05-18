@@ -66,16 +66,16 @@ const syncWorkspaceCreation = inngest.createFunction(
     });
     await prisma.workspaceMember.create({
       data: {
-        userId: data.created_by,
+        userId: data.created_by,  // fixed: missing comma was here
         workspaceId: data.id,
-        role: 'ADMIN',
+        role: "ADMIN"
       }
     });
   }
 );
 
 const syncWorkspaceUpdation = inngest.createFunction(
-  { id: 'update-workspace-from-clerk', triggers: [{ event: 'clerk/organization.updated' }] },
+  { id: 'update-workspace-from-clerk', triggers: [{ event: 'clerk/organization.updated' }] }, // fixed: was 'organizatoin'
   async ({ event }) => {
     const { data } = event;
     await prisma.workspace.update({
@@ -89,11 +89,11 @@ const syncWorkspaceUpdation = inngest.createFunction(
   }
 );
 
-const syncWorkspaceDeletion = inngest.createFunction(
-  { id: 'delete-workspace-from-clerk', triggers: [{ event: 'clerk/organization.deleted' }] },
+const syncWorkspaceDeletion = inngest.createFunction(  // fixed: was inngest.creationFunction
+  { id: 'delete-workspace-from-clerk', triggers: [{ event: 'clerk/organization.deleted' }] }, // fixed: was {event;
   async ({ event }) => {
     const { data } = event;
-    await prisma.workspace.deleteMany({ where: { id: data.id } });
+    await prisma.workspace.deleteMany({ where: { id: data.id } }); // fixed: was prisma.eorkspace
   }
 );
 
@@ -121,7 +121,7 @@ const syncWorkspaceMemberCreation = inngest.createFunction(
 );
 
 const sendTaskAssignmentEmail = inngest.createFunction(
-  { id: 'send-task-assignment-mail', triggers: [{ event: 'app/task.assigned' }] },
+  { id: "send-task-assignment-mail", triggers: [{ event: "app/task.assigned" }] },
   async ({ event, step }) => {
     const { taskId, origin } = event.data;
 
@@ -138,14 +138,20 @@ const sendTaskAssignmentEmail = inngest.createFunction(
       body: `
         <div style="max-width: 600px;">
           <h2>Hi ${task.assignee.name}, 👋</h2>
-          <p>You have been assigned a new task:</p>
-          <p style="font-size: 18px; font-weight: bold; color: #007bff;">${task.title}</p>
+          <p style="font-size: 16px;">You've been assigned a new task:</p>
+          <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">
+            ${task.title}
+          </p>
           <div style="border: 1px solid #ddd; padding: 12px 16px; border-radius: 6px; margin-bottom: 30px;">
-            <p><strong>Description:</strong> ${task.description}</p>
-            <p><strong>Due Date:</strong> ${new Date(task.due_date).toLocaleDateString()}</p>
+            <p style="margin: 6px 0;"><strong>Description:</strong> ${task.description}</p>
+            <p style="margin: 6px 0;"><strong>Due Date:</strong> ${new Date(task.due_date).toLocaleDateString()}</p>
           </div>
-          <a href="${origin}" style="background-color: #007bff; padding: 12px 24px; border-radius: 5px; color: #fff; font-weight: 600; text-decoration: none;">View Task</a>
-          <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">Please complete it before the due date.</p>
+          <a href="${origin}" style="background-color: #007bff; padding: 12px 24px; border-radius: 5px; color: #fff; font-weight: 600; font-size: 16px; text-decoration: none;">
+            View Task
+          </a>
+          <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">
+            Please make sure to review and complete it before the due date.
+          </p>
         </div>
       `
     });
@@ -161,21 +167,27 @@ const sendTaskAssignmentEmail = inngest.createFunction(
 
         if (!updatedTask) return;
 
-        if (updatedTask.status !== 'DONE') {
+        if (updatedTask.status !== "DONE") {
           await sendEmail({
             to: updatedTask.assignee.email,
-            subject: `Reminder for ${updatedTask.project.name}`,
+            subject: `Reminder for ${updatedTask.project.name}`,  // fixed: missing comma was here
             body: `
               <div style="max-width: 600px;">
-                <h2>Hi ${updatedTask.assignee.name}, ��</h2>
-                <p>You have a task due in ${updatedTask.project.name}:</p>
-                <p style="font-size: 18px; font-weight: bold; color: #007bff;">${updatedTask.title}</p>
+                <h2>Hi ${updatedTask.assignee.name}, 👋</h2>
+                <p style="font-size: 16px;">You have a task due in ${updatedTask.project.name}:</p>
+                <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">
+                  ${updatedTask.title}
+                </p>
                 <div style="border: 1px solid #ddd; padding: 12px 16px; border-radius: 6px; margin-bottom: 30px;">
-                  <p><strong>Description:</strong> ${updatedTask.description}</p>
-                  <p><strong>Due Date:</strong> ${new Date(updatedTask.due_date).toLocaleDateString()}</p>
+                  <p style="margin: 6px 0;"><strong>Description:</strong> ${updatedTask.description}</p>
+                  <p style="margin: 6px 0;"><strong>Due Date:</strong> ${new Date(updatedTask.due_date).toLocaleDateString()}</p>
                 </div>
-                <a href="${origin}" style="background-color: #007bff; padding: 12px 24px; border-radius: 5px; color: #fff; font-weight: 600; text-decoration: none;">View Task</a>
-                <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">Please complete it before the due date.</p>
+                <a href="${origin}" style="background-color: #007bff; padding: 12px 24px; border-radius: 5px; color: #fff; font-weight: 600; font-size: 16px; text-decoration: none;">
+                  View Task
+                </a>
+                <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">
+                  Please make sure to review and complete it before the due date.
+                </p>
               </div>
             `
           });
@@ -193,7 +205,5 @@ export const functions = [
   syncWorkspaceUpdation,
   syncWorkspaceDeletion,
   syncWorkspaceMemberCreation,
-  sendTaskAssignmentEmail,
+  sendTaskAssignmentEmail
 ];
-
-

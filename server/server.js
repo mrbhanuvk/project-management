@@ -61,7 +61,7 @@ app.get('/protected', requireAuth(), async (req, res) => {
 //Routes
 app.use("/api/workspaces", protect, workspaceRouter)
 app.use("/api/projects", protect, projectRouter)
-app.use("/api/taks", protect, taskRouter)
+app.use("/api/tasks", protect, taskRouter)
 app.use("/api/comments", protect, commentRouter)
 
 const PORT = process.env.PORT || 8000;
