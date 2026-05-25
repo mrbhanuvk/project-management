@@ -109,6 +109,11 @@ export default function ProjectDetail() {
                 </div>
 
                 <div className="mt-6">
+                    {activeTab === "timetable" &&(
+                        <div className="dark:bg-zinc-900/40 rounded max-w-6xl">
+                            <timetable tasks={tasks} project={project}/>
+                        </div>
+                    )}
                     {activeTab === "tasks" && (
                         <div className=" dark:bg-zinc-900/40 rounded max-w-6xl">
                             <ProjectTasks tasks={tasks} />
